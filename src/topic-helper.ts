@@ -96,4 +96,10 @@ export class TopicHelper {
     static formatIdLocale(locale: Locale) {
         return `${locale.country.toLowerCase()}${locale.lang.toLowerCase()}`;
     }
+    static parseLocaleFromId(id: string): Locale {
+        return {
+            country: id.substr(0, 2),
+            lang: id.substr(2, 2),
+        };
+    }
 }

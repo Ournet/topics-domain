@@ -12,6 +12,7 @@ export {
 
 export {
     TopicRepository,
+    TopicWikiId,
 } from './topic-repository';
 
 export {
