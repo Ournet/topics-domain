@@ -10,7 +10,7 @@ export class SaveTopicsUseCase {
 
     async execute(knownData: BuildTopicParams[]) {
         if (knownData.length === 0) {
-            return;
+            return [];
         }
         const freshTopics = knownData.map(TopicHelper.build);
 
@@ -42,7 +42,7 @@ export class SaveTopicsUseCase {
         }
 
         if (tasks.length === 0) {
-            return;
+            return [];
         }
 
         const results = await Promise.all(tasks);
@@ -52,13 +52,15 @@ export class SaveTopicsUseCase {
             existingTopics = existingTopics.concat(results[1]);
         }
 
-        await this.processTopics(freshTopics, existingTopics);
+        return this.processTopics(freshTopics, existingTopics);
     }
 
     protected async processTopics(freshTopics: Topic[], existingTopics: Topic[]) {
         const minUpdateDate = new Date();
         minUpdateDate.setDate(minUpdateDate.getDate() - 7);
         const minUpdateStringDate = minUpdateDate.toISOString();
+
+        const topics: Topic[] = [];
 
         for (const freshTopic of freshTopics) {
             const existingTopic = existingTopics.find(item => {
@@ -68,11 +70,13 @@ export class SaveTopicsUseCase {
                 return item.id === freshTopic.id;
             });
             if (!existingTopic) {
-                await this.createTopic(freshTopic);
+                topics.push(await this.createTopic(freshTopic));
             } else {
-                await this.updateTopic(freshTopic, existingTopic, minUpdateStringDate);
+                topics.push(await this.updateTopic(freshTopic, existingTopic, minUpdateStringDate));
             }
         }
+
+        return topics;
     }
 
     protected createTopic(topic: Topic) {
@@ -83,7 +87,7 @@ export class SaveTopicsUseCase {
     protected async updateTopic(freshTopic: Topic, existingTopic: Topic, minDate: string) {
         const refDate = existingTopic.updatedAt || existingTopic.createdAt;
         if (refDate > minDate) {
-            return;
+            return existingTopic;
         }
 
         const deleteFields: (keyof Topic)[] = [];
@@ -116,11 +120,13 @@ export class SaveTopicsUseCase {
         if (hasChanges) {
             debug(`updating topic: ${existingTopic.id}`);
 
-            await this.topicRep.update({
+            return this.topicRep.update({
                 id: existingTopic.id,
                 set: setFields,
                 delete: deleteFields,
             });
         }
+
+        return existingTopic;
     }
 }
