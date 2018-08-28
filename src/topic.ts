@@ -1,6 +1,6 @@
 import { Dictionary } from "@ournet/domain";
 
-export type TopicType = 'PLACE' | 'ORG' | 'PERSON' | 'WORK'
+export type TopicType = 'PLACE' | 'ORG' | 'PERSON' | 'WORK' | 'EVENT';
 
 export interface Topic {
     id: string
