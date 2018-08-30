@@ -4,6 +4,7 @@ const debug = require('debug')('ournet:topics-domain');
 import { BuildTopicParams, Topic } from "./topic";
 import { TopicHelper } from "./topic-helper";
 import { TopicWikiId, TopicRepository } from "./topic-repository";
+import { uniqByProperty } from "@ournet/domain";
 
 export class SaveTopicsUseCase {
     constructor(private topicRep: TopicRepository) { }
@@ -13,24 +14,18 @@ export class SaveTopicsUseCase {
             return [];
         }
         const freshTopics = knownData.map(TopicHelper.build);
-
-        const knownNoWikiTopics: Topic[] = [];
-        const knownWikiTopics: Topic[] = [];
         const topicsWikiIds: TopicWikiId[] = [];
         const topicsIds: string[] = [];
 
         freshTopics.forEach(item => {
             if (item.wikiId) {
-                knownWikiTopics.push(item);
                 topicsWikiIds.push({
                     lang: item.lang,
                     country: item.country,
                     wikiId: item.wikiId,
                 });
-            } else {
-                knownNoWikiTopics.push(item);
-                topicsIds.push(item.id);
             }
+            topicsIds.push(item.id);
         });
 
         const tasks: Promise<Topic[]>[] = [];
@@ -56,6 +51,9 @@ export class SaveTopicsUseCase {
     }
 
     protected async processTopics(freshTopics: Topic[], existingTopics: Topic[]) {
+        freshTopics = uniqByProperty(freshTopics, 'id');
+        existingTopics = uniqByProperty(existingTopics, 'id');
+
         const minUpdateDate = new Date();
         minUpdateDate.setDate(minUpdateDate.getDate() - 7);
         const minUpdateStringDate = minUpdateDate.toISOString();
@@ -63,13 +61,18 @@ export class SaveTopicsUseCase {
         const topics: Topic[] = [];
 
         for (const freshTopic of freshTopics) {
-            const existingTopic = existingTopics.find(item => {
+            if (!!topics.find(item => item.id === freshTopic.id)) {
+                debug(`Already processed topic: ${freshTopic.id}`);
+                continue;
+            }
+            let existingTopic = existingTopics.find(item => {
                 if (freshTopic.wikiId && item.wikiId) {
                     return freshTopic.wikiId === item.wikiId;
                 }
 
-                return item.id === freshTopic.id
-            });
+                return false;
+            }) || existingTopics.find(item => item.id === freshTopic.id);
+
             if (!existingTopic) {
                 topics.push(await this.createTopic(freshTopic));
             } else {
