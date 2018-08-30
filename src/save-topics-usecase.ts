@@ -64,10 +64,11 @@ export class SaveTopicsUseCase {
 
         for (const freshTopic of freshTopics) {
             const existingTopic = existingTopics.find(item => {
-                if (freshTopic.wikiId) {
-                    return item.wikiId === freshTopic.wikiId;
+                if (freshTopic.wikiId && item.wikiId) {
+                    return freshTopic.wikiId === item.wikiId;
                 }
-                return item.id === freshTopic.id;
+
+                return item.id === freshTopic.id
             });
             if (!existingTopic) {
                 topics.push(await this.createTopic(freshTopic));
