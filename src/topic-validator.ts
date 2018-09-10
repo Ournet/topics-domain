@@ -1,7 +1,9 @@
-import { EntityValidator, Joi } from "@ournet/domain";
-import { Topic } from "./topic";
 
-export class TopicValidator extends EntityValidator<Topic> {
+import { Topic } from "./topic";
+import { JoiEntityValidator } from "@ournet/domain";
+import Joi = require('joi');
+
+export class TopicValidator extends JoiEntityValidator<Topic> {
     constructor() {
         super({ createSchema, updateSchema });
     }

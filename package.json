@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/ournet/topics-domain#readme",
   "devDependencies": {
+    "@types/joi": "^13.4.4",
     "@types/node": "latest",
     "ava": "^0.23.0",
     "debug": "^3.1.0",
@@ -43,6 +44,7 @@
     "typescript": "latest"
   },
   "dependencies": {
+    "joi": "^13.6.0",
     "transliteration": "^1.6.6"
   }
 }
