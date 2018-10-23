@@ -30,10 +30,16 @@ export class TopicHelper {
         if (params.englishName) {
             topic.englishName = params.englishName;
         }
+        if (params.description) {
+            topic.description = params.description;
+        }
 
 
         if (params.wikiData) {
             topic.wikiId = params.wikiData.id;
+            if (params.wikiData.about) {
+                topic.about = params.wikiData.about;
+            }
             const data = params.wikiData.data;
             if (data) {
                 // deth date
