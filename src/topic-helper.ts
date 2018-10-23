@@ -33,6 +33,9 @@ export class TopicHelper {
         if (params.description) {
             topic.description = params.description;
         }
+        if (params.type) {
+            topic.type = params.type;
+        }
 
 
         if (params.wikiData) {

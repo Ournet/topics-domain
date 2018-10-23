@@ -20,7 +20,7 @@ const schema = {
     commonName: Joi.string().trim().min(2).max(200),
     englishName: Joi.string().trim().min(2).max(200),
     abbr: Joi.string().trim().min(2).max(50),
-    type: Joi.string().valid(['PERSON', 'PLACE', 'ORG', 'WORK', 'EVENT']),
+    type: Joi.string().valid(['PERSON', 'PLACE', 'ORG', 'WORK', 'EVENT', 'PRODUCT']),
 
     description: Joi.string().trim().max(100).truncate(),
     about: Joi.string().trim().max(250).truncate(),
