@@ -25,3 +25,8 @@ test('createSlug (too long)', t => {
     t.is(TopicHelper.createSlug('Ministerul Afacerilor Interne al Rugandei'),
         'ministerul-afacerilor-interne-41ru');
 })
+
+test('createSlug (Russian)', t => {
+    t.is(TopicHelper.createSlug('Молдавия'), 'moldaviya');
+    t.is(TopicHelper.createSlug('Додон, Игорь Николаевич'), 'dodon-igor-nikolaevich');
+})
